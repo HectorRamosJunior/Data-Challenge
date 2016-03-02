@@ -8,28 +8,27 @@ def makeSolution(inputFileName, outputFileName):
     if os.path.exists(outputFileName):
         os.remove(outputFileName)
 
-    #Dict assumes the column names or placement subject to change
-    inputReader = csv.DictReader(open(inputFileName))
+    #Dict reader/writer for flexibility with possible column changes
+    reader = csv.DictReader(open(inputFileName))
     writer = csv.DictWriter(open(outputFileName,'wb'), 
-                                fieldnames = inputReader.fieldnames)
+                                fieldnames = reader.fieldnames)
     writer.writeheader()
 
-    #O(1) readtime instead of reading the csv file each time
+    #O(1) readtime instead of reading from the csv file each time
     stateDict = getStateDict("state_abbreviations.csv")
 
     #Write the rows to the new file, fixing them along the way
-    for row in inputReader:
+    for row in reader:
         fixedRow = row 
-        fixedRow["bio"] = getCleanString(fixedRow["bio"])
-        
+		
+		#Fix the dictionary fields as desired
+        fixedRow["bio"] = " ".join(fixedRow["bio"].split())
         if fixedRow["state"] in stateDict:
             fixedRow["state"] = stateDict[fixedRow["state"]]
 
+		#Write the modified dictionary as a new row to the output csv
         writer.writerow(fixedRow)
 
-
-def getCleanString(string):
-    return "test"
 
 def getStateDict(fileName):
     reader = csv.reader(open(fileName, "rb"))
@@ -47,9 +46,4 @@ def getStateDict(fileName):
     return stateDict
 
 
-
 makeSolution("test.csv", "solution.csv")
-
-
-
-
