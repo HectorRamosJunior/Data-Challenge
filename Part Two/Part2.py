@@ -32,7 +32,7 @@ def scrapeData(mainURL):
         next = soup.find("li", class_= "next").find("a").get("href")
         print "Moving onto page " + mainURL + next
 
-    print companyDict
+    json.dump(companyDict, open("solution.json", "w"))
 
 
 #returns dictionary of parsed data from the company page
