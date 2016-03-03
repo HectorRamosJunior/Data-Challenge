@@ -5,6 +5,7 @@ Enigma Coding Challenge Part 1
 import csv
 import os
 
+
 def make_solution(input_file_name, output_file_name):
     """Creates a new csv file which if a modified version of the input. 
     The bio field's padding is removed, the state abbreviation is 
@@ -17,7 +18,7 @@ def make_solution(input_file_name, output_file_name):
         output_file_name: The filename for the desired output csv file
 
     Returns:
-        None
+        None.
     """
     # If solution file already exists, remove it
     if os.path.exists(output_file_name):
@@ -45,17 +46,22 @@ def make_solution(input_file_name, output_file_name):
     # modifying the bio, state and start date fields along the way
     for row in reader:
         fixed_row = row 
+
         # Fixes the bio field, changes state abrev to full name using dict
         fixed_row["bio"] = " ".join(fixed_row["bio"].split())
         if fixed_row["state"] in state_dict:
             fixed_row["state"] = state_dict[fixed_row["state"]]
 
-        # Sets the start date fields from the tuple in the function    
-        date, date_description = date_offset(fixed_row["start_date"], 
-                                            month_list)
+        # Gets normalized date string    
+        date = date_offset(fixed_row["start_date"], month_list)
 
-        fixed_row["start_date"] = date 
-        fixed_row["start_date_description"] = date_description
+        # Handle invalid dates
+        if not date:
+            fixed_row["start_date"] = "Invalid" 
+            fixed_row["start_date_description"] = date
+        else:
+            fixed_row["start_date"] = date 
+            fixed_row["start_date_description"] = ""
 
         # Write the modified row as a newest row to the output csv
         writer.writerow(fixed_row)
@@ -69,7 +75,7 @@ def get_state_dict(file_name):
     Also assumes there is more than one row in the state csv file.
 
     Args:
-        file_name: The csv file name for the state abbreviations.
+        file_name: The csv file name for the state abbreviations
 
     Returns:
         Dictionary of state abbreviations as keys, full names as values.
@@ -89,65 +95,65 @@ def get_state_dict(file_name):
 def date_offset(date, month_list):
     """Normalizes a date string to YYYY-MM-DD. If the date string
     input is invalid, a tuple is returned where the first value
-    is set to "Invalid" and the second value holds the date string
+    is set to "Invalid" and the second value holds the original.
 
-    Assumes valid date entries are in the format "June 26, 1977"
-    or in the format "10/27/1998".
+    Assumes valid date entries are in the format "<Month> DD, YYYY"
+    or in the format "MM/DD/YYYY".
 
     Args:
         date: The original start_date field from the input csv
         month_list: A list of the months in a year
 
     Returns:
-        A tuple for the start_date fields in the output csv
+        Normalized string if valid, None if not valid.
     """
-    spaced = date.split()
-    slashed = date.split("/")
+    split_by_space = date.split(" ")
+    split_by_slash = date.split("/")
 
-    # To be normalized to "YYYY-MM-DD"
     normalized = "" 
 
-    # Valid Dates to be normalized: "June 26, 1977" 
-    if len(spaced) == 3:
+    # Detects the format "<Month> DD, YYYY"
+    if len(split_by_space) == 3:
+        month, day, year = split_by_space
  
+        # Handle year
+        if year.isdigit():
+            normalized += year + "-"
         
-        # YYYY-
-        if spaced[2].isdigit():
-            normalized += spaced[2] + "-"
-        
-        # MM-
+        # Handle month
         for i in xrange(len(month_list)):
-            if spaced[0] == month_list[i]:
-                if i+1 < 10:
+            if month == month_list[i]:
+                #If match is in the first 9 months
+                if i + 1 < 10:
                     normalized += "0"
                 normalized += str(i+1) + "-"    
 
-        # DD
-        spaced[1] = spaced[1].replace(",", "")
-        if spaced[1].isdigit():
-            normalized += spaced[1]
+        # Handle day
+        day = day.replace(",", "")
+        if day.isdigit():
+            normalized += day
 
-    # Valid Dates to be normalized: "10/27/1998"
-    if len(slashed) == 3:
-
+    # Detects the format: "MM/DD/YYYY"
+    if len(split_by_slash) == 3:
+        month, day, year = split_by_space
         
-        # YYYY-
-        if slashed[2].isdigit():
-            normalized += slashed[2] + "-"
+        # Handle year
+        if year.isdigit():
+            normalized += year + "-"
         
-        # MM-
-        if slashed[0].isdigit():
-            normalized += slashed[0] + "-"   
+        # Handle month
+        if month.isdigit():
+            normalized += month + "-"   
 
-        # DD
-        if slashed[1].isdigit():
-            normalized += slashed[1]
+        # Handle day
+        if day.isdigit():
+            normalized += day
 
 
     # Checks if date was properly normalized
     if len(normalized) != 10:
-        return "Invalid", date
-    return normalized, ""
+        return None
+    return normalized
 
 
 make_solution("test.csv", "solution.csv")
