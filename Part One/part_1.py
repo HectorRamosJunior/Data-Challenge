@@ -18,7 +18,7 @@ def make_solution(input_file_name, output_file_name):
         output_file_name: The filename for the desired output csv file
 
     Returns:
-        None.
+        None
     """
     # If solution file already exists, remove it
     if os.path.exists(output_file_name):
@@ -79,7 +79,7 @@ def get_state_dict(file_name):
         file_name: The csv file name for the state abbreviations
 
     Returns:
-        Dictionary of state abbreviations as keys, full names as values.
+        Dictionary of state abbreviations as keys, full names as values
     """
     reader = csv.reader(open(file_name, "rb"))
     state_dict = {}
@@ -106,7 +106,7 @@ def date_offset(date, month_list):
         month_list: A list of the months in a year
 
     Returns:
-        Normalized string if valid, None if not valid.
+        Normalized string if valid, None if not valid
     """
     split_by_space = date.split(" ")
     split_by_slash = date.split("/")
