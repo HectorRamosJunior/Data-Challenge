@@ -1,4 +1,4 @@
-""" Hector Ramos
+"""Hector Ramos
 3/2/2016
 Enigma Coding Challenge Part 2
 """

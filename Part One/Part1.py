@@ -1,59 +1,80 @@
-""" Hector Ramos
+"""Hector Ramos
 3/1/2016
 Enigma Coding Challenge Part 1
 """
-import csv, os
+import csv
+import os
 
-def makeSolution(inputFileName, outputFileName):
+def make_solution(input_file_name, output_file_name):
+    """Creates a new csv file which if a modified version of the input. 
+    The bio field's padding is removed, the state abbreviation is 
+    changed to its full name and the start date is normalized.
+
+    Deletes the old output file if it exists and creates a new one.
+
+    Args:
+        input_file_name: The filename for the input csv file
+        output_file_name: The filename for the desired output csv file
+
+    Returns:
+        None
+    """
     # If solution file already exists, remove it
-    if os.path.exists(outputFileName):
-        os.remove(outputFileName)
+    if os.path.exists(output_file_name):
+        os.remove(output_file_name)
 
     # Dict reader/writer for flexibility with possible column changes
-    reader = csv.DictReader(open(inputFileName))
+    reader = csv.DictReader(open(input_file_name))
 
-    writerHeader = reader.fieldnames
-    writerHeader.append("start_date_description")
-    writer = csv.DictWriter(open(outputFileName,'wb'), 
-                            fieldnames = writerHeader)
+    writer_header = reader.fieldnames
+    writer_header.append("start_date_description")
+    writer = csv.DictWriter(open(output_file_name, "wb"), 
+                            fieldnames = writer_header)
     writer.writeheader()
 
-
     # O(1) readtime instead of reading from the csv file each time
-    stateDict = getStateDict("state_abbreviations.csv")
+    state_dict = get_state_dict("state_abbreviations.csv")
 
-    # List initiatilized above dateOffset() scope for slight efficiency
-    # A set could have been used instead, however the scope is small
-    # And the list holds the order of the months by index
-    monthList = ["January", "February", "March", "April", "May", 
+    # List initialized above date_offset() scope for slight efficiency
+    # a set could have been used instead, however the list is small
+    # and the list holds the order of the months by index
+    month_List = ["January", "February", "March", "April", "May", 
                 "June", "July", "August", "September", "October", 
                 "November", "December"]
 
-
-    # Write the rows to the new file, fixing them along the way
+    # Write the rows from the input to the new file, while 
+    # modifying the bio, state and start date fields along the way
     for row in reader:
-        fixedRow = row 
-		
+        fixed_row = row 
 		# Fixes the bio field, changes state abrev to full name using dict
-        fixedRow["bio"] = " ".join(fixedRow["bio"].split())
-        if fixedRow["state"] in stateDict:
-            fixedRow["state"] = stateDict[fixedRow["state"]]
+        fixed_row["bio"] = " ".join(fixed_row["bio"].split())
+        if fixed_row["state"] in state_dict:
+            fixed_row["state"] = state_dict[fixed_row["state"]]
 
         # Sets the start date fields from the tuple in the function    
-        date, date_description = dateOffset(fixedRow["start_date"], 
-                                            monthList)
+        date, date_description = date_offset(fixed_row["start_date"], 
+                                            month_List)
 
-        fixedRow["start_date"] = date 
-        fixedRow["start_date_description"] = date_description
+        fixed_row["start_date"] = date 
+        fixed_row["start_date_description"] = date_description
 
-		# Write the modified dictionary as a new row to the output csv
-        writer.writerow(fixedRow)
+		# Write the modified row as a newest row to the output csv
+        writer.writerow(fixed_row)
 
 
 # Returns a dictionary of the state abbreviations for O(1) runtime
-def getStateDict(fileName):
-    reader = csv.reader(open(fileName, "rb"))
-    stateDict = {}
+def get_state_dict(file_name):
+    """Reads the csv file for the list of state abbreviations and 
+    returns a dictionary of the abbrevations and full names of states. 
+
+    Args:
+        file_name: The csv file name for the state abbreviations.
+
+    Returns:
+        Dictionary of state abbreviations as keys, full names as values.
+    """
+    reader = csv.reader(open(file_name, "rb"))
+    state_dict = {}
 
     # bool to skip the first row(headers)
     header = True 
@@ -63,12 +84,21 @@ def getStateDict(fileName):
             header = False
             continue
 
-        stateDict[row[0]] = row[1]
+        state_dict[row[0]] = row[1]
 
-    return stateDict
+    return state_dict
 
 # Returns a tuple for the start date fields, catches errors in start date
-def dateOffset(date, monthList):
+def date_offset(date, month_list):
+    """Reads the csv file for the list of state abbreviations and 
+    returns a dictionary of the abbrevations and full names of states. 
+
+    Args:
+        date: The csv file name for the state abbreviations.
+
+    Returns:
+        Dictionary of state abbreviations as keys, full names as values.
+    """
     spaced = date.split()
     slashed = date.split("/")
 
