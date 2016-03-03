@@ -7,4 +7,4 @@ Clean the padding of the bio in the csv file, to change the state name abbreviat
 
 Part 2:
 
-Scrape a sample site to output company listing data in json.
+Scape a sample site for each company's page, then store each company's data into a json file collectively
