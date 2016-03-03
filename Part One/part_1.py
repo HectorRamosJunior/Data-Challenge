@@ -62,7 +62,7 @@ def make_solution(input_file_name, output_file_name):
             fixed_row["start_date"] = "Invalid" 
         else:
             fixed_row["start_date"] = date 
-            fixed_row["start_date_description"] = " "
+            fixed_row["start_date_description"] = ""
 
         # Write the modified row as a newest row to the output csv
         writer.writerow(fixed_row)

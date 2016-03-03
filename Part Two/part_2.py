@@ -31,7 +31,7 @@ def scrape_company_data(base_url, output_file_name):
         full_page_url = base_url + page_index
         print "Scraping data from page %s" % (full_page_url)
 
-        page = urllib.urlopen(base_url + page_index).read()
+        page = urllib.urlopen(full_page_url).read()
         soup = BeautifulSoup(page, "html.parser")
 
         # Parses for all the companies a tags in the table on the page
