@@ -14,7 +14,7 @@ def scrape_company_data(base_url, output_file_name):
     This assumes the webpage data is structured like the data set at 
     http://data-interview.enigmalabs.org. 
     
-    Prints the next page it's scraping from.
+    Prints the current page it's scraping from.
 
     Args:
         base_url: The base website url to scape data from
@@ -28,7 +28,8 @@ def scrape_company_data(base_url, output_file_name):
     next_page = True
 
     while next_page:
-        print "Scraping data from page " + base_url + page_index
+        full_page_url = base_url + page_index
+        print "Scraping data from page %s" % (full_page_url)
 
         page = urllib.urlopen(base_url + page_index).read()
         soup = BeautifulSoup(page, "html.parser")
@@ -81,5 +82,4 @@ def get_company_data(company_url):
     return data_dict
 
 
-main_url = "http://data-interview.enigmalabs.org"
-scrape_company_data(main_url, "solution.json")
+scrape_company_data("http://data-interview.enigmalabs.org", "solution.json")

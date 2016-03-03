@@ -58,11 +58,11 @@ def make_solution(input_file_name, output_file_name):
 
         # Handle invalid normalized date
         if not date:
+            fixed_row["start_date_description"] = fixed_row["start_date"]
             fixed_row["start_date"] = "Invalid" 
-            fixed_row["start_date_description"] = date
         else:
             fixed_row["start_date"] = date 
-            fixed_row["start_date_description"] = ""
+            fixed_row["start_date_description"] = " "
 
         # Write the modified row as a newest row to the output csv
         writer.writerow(fixed_row)
@@ -136,7 +136,7 @@ def date_offset(date, month_list):
 
     # Detects the format: "MM/DD/YYYY"
     if len(split_by_slash) == 3:
-        month, day, year = split_by_space
+        month, day, year = split_by_slash
         
         # Handle year
         if year.isdigit():
