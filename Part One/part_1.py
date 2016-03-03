@@ -33,6 +33,7 @@ def make_solution(input_file_name, output_file_name):
                             fieldnames = writer_header)
     writer.writeheader()
 
+    # Get dictionary of state abbrevation full names
     state_dict = get_state_dict("state_abbreviations.csv")
 
     # List initialized above date_offset() scope for slight efficiency
@@ -47,7 +48,7 @@ def make_solution(input_file_name, output_file_name):
     for row in reader:
         fixed_row = row 
 
-        # Fixes the bio field, changes state abrev to full name using dict
+        # Fixes the bio field, changes state abrev to full name
         fixed_row["bio"] = " ".join(fixed_row["bio"].split())
         if fixed_row["state"] in state_dict:
             fixed_row["state"] = state_dict[fixed_row["state"]]
@@ -55,7 +56,7 @@ def make_solution(input_file_name, output_file_name):
         # Gets normalized date string    
         date = date_offset(fixed_row["start_date"], month_list)
 
-        # Handle invalid dates
+        # Handle invalid normalized date
         if not date:
             fixed_row["start_date"] = "Invalid" 
             fixed_row["start_date_description"] = date
