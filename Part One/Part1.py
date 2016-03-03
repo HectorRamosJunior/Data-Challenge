@@ -32,40 +32,41 @@ def make_solution(input_file_name, output_file_name):
                             fieldnames = writer_header)
     writer.writeheader()
 
-    # O(1) readtime instead of reading from the csv file each time
     state_dict = get_state_dict("state_abbreviations.csv")
 
     # List initialized above date_offset() scope for slight efficiency
     # a set could have been used instead, however the list is small
     # and the list holds the order of the months by index
-    month_List = ["January", "February", "March", "April", "May", 
-                "June", "July", "August", "September", "October", 
-                "November", "December"]
+    month_list = ["January", "February", "March", "April", "May", 
+                  "June", "July", "August", "September", "October", 
+                  "November", "December"]
 
     # Write the rows from the input to the new file, while 
     # modifying the bio, state and start date fields along the way
     for row in reader:
         fixed_row = row 
-		# Fixes the bio field, changes state abrev to full name using dict
+        # Fixes the bio field, changes state abrev to full name using dict
         fixed_row["bio"] = " ".join(fixed_row["bio"].split())
         if fixed_row["state"] in state_dict:
             fixed_row["state"] = state_dict[fixed_row["state"]]
 
         # Sets the start date fields from the tuple in the function    
         date, date_description = date_offset(fixed_row["start_date"], 
-                                            month_List)
+                                            month_list)
 
         fixed_row["start_date"] = date 
         fixed_row["start_date_description"] = date_description
 
-		# Write the modified row as a newest row to the output csv
+        # Write the modified row as a newest row to the output csv
         writer.writerow(fixed_row)
 
 
-# Returns a dictionary of the state abbreviations for O(1) runtime
 def get_state_dict(file_name):
     """Reads the csv file for the list of state abbreviations and 
     returns a dictionary of the abbrevations and full names of states. 
+
+    Assumes the first column is the abbreviation, second is the name.
+    Also assumes there is more than one row in the state csv file.
 
     Args:
         file_name: The csv file name for the state abbreviations.
@@ -76,28 +77,29 @@ def get_state_dict(file_name):
     reader = csv.reader(open(file_name, "rb"))
     state_dict = {}
 
-    # bool to skip the first row(headers)
-    header = True 
+    # To skip the first row (headers)
+    reader.next()
 
     for row in reader:
-        if header:
-            header = False
-            continue
-
         state_dict[row[0]] = row[1]
 
     return state_dict
 
-# Returns a tuple for the start date fields, catches errors in start date
+
 def date_offset(date, month_list):
-    """Reads the csv file for the list of state abbreviations and 
-    returns a dictionary of the abbrevations and full names of states. 
+    """Normalizes a date string to YYYY-MM-DD. If the date string
+    input is invalid, a tuple is returned where the first value
+    is set to "Invalid" and the second value holds the date string
+
+    Assumes valid date entries are in the format "June 26, 1977"
+    or in the format "10/27/1998".
 
     Args:
-        date: The csv file name for the state abbreviations.
+        date: The original start_date field from the input csv
+        month_list: A list of the months in a year
 
     Returns:
-        Dictionary of state abbreviations as keys, full names as values.
+        A tuple for the start_date fields in the output csv
     """
     spaced = date.split()
     slashed = date.split("/")
@@ -105,16 +107,17 @@ def date_offset(date, month_list):
     # To be normalized to "YYYY-MM-DD"
     normalized = "" 
 
+    # Valid Dates to be normalized: "June 26, 1977" 
     if len(spaced) == 3:
-        # Valid Dates to be normalized: "June 26, 1977"  
+ 
         
         # YYYY-
         if spaced[2].isdigit():
             normalized += spaced[2] + "-"
         
         # MM-
-        for i in xrange(len(monthList)):
-            if spaced[0] == monthList[i]:
+        for i in xrange(len(month_list)):
+            if spaced[0] == month_list[i]:
                 if i+1 < 10:
                     normalized += "0"
                 normalized += str(i+1) + "-"    
@@ -124,8 +127,9 @@ def date_offset(date, month_list):
         if spaced[1].isdigit():
             normalized += spaced[1]
 
+    # Valid Dates to be normalized: "10/27/1998"
     if len(slashed) == 3:
-        # Valid Dates to be normalized: "10/27/1998"
+
         
         # YYYY-
         if slashed[2].isdigit():
@@ -146,4 +150,4 @@ def date_offset(date, month_list):
     return normalized, ""
 
 
-makeSolution("test.csv", "solution.csv")
+make_solution("test.csv", "solution.csv")
