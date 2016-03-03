@@ -95,8 +95,7 @@ def get_state_dict(file_name):
 
 def date_offset(date, month_list):
     """Normalizes a date string to YYYY-MM-DD. If the date string
-    input is invalid, a tuple is returned where the first value
-    is set to "Invalid" and the second value holds the original.
+    input is invalid, None is returned.
 
     Assumes valid date entries are in the format "<Month> DD, YYYY"
     or in the format "MM/DD/YYYY".
