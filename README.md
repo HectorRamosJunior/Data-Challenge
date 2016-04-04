@@ -1,5 +1,4 @@
 # Data Engineer Code Challenge
-This challenge was given to be my a company as the first round, to be solved within 3-5 business days.
 
 Part 1:
 
