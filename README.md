@@ -1,4 +1,4 @@
-# Data Engineer Code Challenge
+# Data Challenge
 
 Part 1:
 
